@@ -139,6 +139,11 @@ function recursiveSearchShared (files, query) {
     }
 }
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 http.listen(3000, function () {
     console.log("Server started at " + mainURL);
     mongoClient.connect("mongodb+srv://Mayank:Mayank@cluster0.08rw4nt.mongodb.net/file_transfer?retryWrites=true&w=majority", {
