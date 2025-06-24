@@ -28,11 +28,11 @@ app.use("/public/font-awesome-4.7.0", express.static(__dirname + "/public/font-a
 app.use("/public/fonts", express.static(__dirname + "/public/fonts"));
 
 app.set("view engine", "ejs");
-var mainURL = "http://localhost:3000";
+var mainURL = process.env.MAIN_URL || "http://localhost:3000";
 var database = null;
 
 app.use(function (request, result, next) {
-    request.mainURL = mainURL;
+    request.mainURL = process.env.MAIN_URL || (request.protocol + "://" + request.get("host"));
     request.isLogin = (typeof request.session.user !== "undefined");
     request.user = request.session.user;
     next();
