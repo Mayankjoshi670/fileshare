@@ -1,0 +1,397 @@
+<%- include ("includes/header") %>
+
+<div id="homeApp">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="title-word title-word-1">FILE </span>
+                    <span class="title-word title-word-2">Transfer</span>
+                    <span class="title-word title-word-3">Web</span>
+                    <span class="title-word title-word-4">App</span>
+                </h1>
+                <p class="hero-subtitle">Lightning-fast, secure file sharing that feels effortless</p>
+                
+                <div class="hero-actions">
+                    <button class="hero-btn primary-btn" @click="redirectToAuth">
+                        Get Started - It's Free
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="device-mockup">
+                    <div class="screen">
+                        <div class="file-transfer-animation">
+                            <div class="file" v-for="(file, index) in flyingFiles" :key="index"
+                                 :style="file.style">
+                                <div class="file-icon" :class="file.type">
+                                    <span>{{ file.ext }}</span>
+                                </div>
+                                <div class="file-name">{{ file.name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="section-header">
+            <h2>Why Choose Our Platform</h2>
+            <p>Experience file transfer reimagined</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card" v-for="(feature, index) in features" :key="index">
+                <div class="feature-icon">
+                    <component :is="feature.icon"></component>
+                </div>
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --accent: #ec4899;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --gray: #94a3b8;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--dark);
+        background-color: var(--light);
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 0 2rem;
+    }
+    
+    .hero-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+    
+    .title-word {
+        display: inline-block;
+    }
+    
+    .title-word-1 { color: var(--primary); }
+    .title-word-2 { color: var(--secondary); }
+    .title-word-3 { color: var(--dark); }
+    .title-word-4 { color: var(--accent); }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--gray);
+        margin-bottom: 2.5rem;
+        max-width: 500px;
+    }
+    
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .primary-btn {
+        background-color: var(--accent);
+        color: white;
+        border: 2px solid var(--accent);
+        padding: 0.75rem 2rem;
+        font-weight: 700;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .primary-btn:hover {
+        background-color: #db2777;
+        border-color: #db2777;
+        transform: translateY(-3px);
+    }
+    
+    /* Device Mockup */
+    .device-mockup {
+        position: relative;
+        perspective: 1000px;
+        transform: rotateY(-15deg) rotateX(5deg);
+        animation: float-device 6s ease-in-out infinite;
+    }
+    
+    @keyframes float-device {
+        0%, 100% { transform: rotateY(-15deg) rotateX(5deg) translateY(0); }
+        50% { transform: rotateY(-15deg) rotateX(5deg) translateY(-20px); }
+    }
+    
+    .screen {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        height: 500px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .file {
+        position: absolute;
+        background: white;
+        border-radius: 12px;
+        padding: 0.75rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.5s ease;
+    }
+    
+    .file-icon {
+        width: 60px;
+        height: 80px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .file-icon.pdf {
+        background: linear-gradient(135deg, #FF5F6D, #FFC371);
+    }
+    
+    .file-icon.img {
+        background: linear-gradient(135deg, #4776E6, #8E54E9);
+    }
+    
+    .file-icon.doc {
+        background: linear-gradient(135deg, #1D976C, #93F9B9);
+    }
+    
+    .file-icon.zip {
+        background: linear-gradient(135deg, #FF8008, #FFC837);
+    }
+    
+    .file-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        max-width: 80px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 8rem 2rem;
+    }
+    
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+    
+    .section-header p {
+        font-size: 1.125rem;
+        color: var(--gray);
+    }
+    
+    .features-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card p {
+        color: var(--gray);
+        line-height: 1.6;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-container {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+        
+        .hero-actions {
+            justify-content: center;
+        }
+        
+        .hero-visual {
+            margin-top: 4rem;
+            display: flex;
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 3rem;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    const homeApp = Vue.createApp({
+        data() {
+            return {
+                flyingFiles: [
+                    { 
+                        name: 'Document.pdf', 
+                        ext: 'PDF', 
+                        type: 'pdf',
+                        style: {
+                            left: '10%',
+                            top: '20%',
+                            transform: 'scale(0.8)'
+                        }
+                    },
+                    { 
+                        name: 'Vacation.jpg', 
+                        ext: 'JPG', 
+                        type: 'img',
+                        style: {
+                            left: '70%',
+                            top: '30%',
+                            transform: 'scale(1)'
+                        }
+                    },
+                    { 
+                        name: 'Report.docx', 
+                        ext: 'DOC', 
+                        type: 'doc',
+                        style: {
+                            left: '30%',
+                            top: '60%',
+                            transform: 'scale(0.9)'
+                        }
+                    }
+                ],
+                features: [
+                    {
+                        title: 'Lightning Fast',
+                        description: 'Transfer large files in seconds with our optimized network',
+                        icon: {
+                            template: `<svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>`
+                        }
+                    },
+                    {
+                        title: 'Bank-Grade Security',
+                        description: 'End-to-end encryption protects your files during transfer',
+                        icon: {
+                            template: `<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`
+                        }
+                    },
+                    {
+                        title: 'No Size Limits',
+                        description: 'Send files of any size without restrictions',
+                        icon: {
+                            template: `<svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>`
+                        }
+                    }
+                ]
+            }
+        },
+        methods: {
+            redirectToAuth() {
+                window.location.href = '/login';
+            },
+            animateFiles() {
+                setInterval(() => {
+                    this.flyingFiles.forEach(file => {
+                        file.style.left = `${Math.random() * 70 + 10}%`;
+                        file.style.top = `${Math.random() * 60 + 20}%`;
+                        file.style.transform = `scale(${Math.random() * 0.3 + 0.7})`;
+                    });
+                }, 3000);
+            }
+        },
+        mounted() {
+            this.animateFiles();
+        }
+    });
+    
+    homeApp.mount("#homeApp");
+</script>
+
+<%- include ("includes/footer") %>

@@ -1,0 +1,63 @@
+<%- include ("includes/header", {
+    "title": "Login"
+ }) %>
+ 
+ <div class="container my-5">
+     <div class="row justify-content-center">
+         <div class="col-md-8 col-lg-6">
+             <%- include ("includes/ResponseAlert", {
+                 "request": request
+             }) %>
+             
+             <div class="card shadow-sm">
+                 <div class="card-header bg-primary text-white">
+                     <h4 class="mb-0">LOG IN</h4>
+                 </div>
+                 <div class="card-body p-4">
+                     <form action="<%= request.mainURL %>/Login" method="POST">
+                         <div class="mb-3">
+                             <label for="email" class="form-label">Email Address</label>
+                             <input 
+                                 type="email" 
+                                 id="email"
+                                 placeholder="Enter your email" 
+                                 name="email" 
+                                 class="form-control form-control-lg" 
+                                 required 
+                             />
+                         </div>
+ 
+                         <div class="mb-3">
+                             <label for="password" class="form-label">Password</label>
+                             <input 
+                                 type="password" 
+                                 id="password"
+                                 placeholder="Enter your password" 
+                                 name="password" 
+                                 class="form-control form-control-lg" 
+                                 required 
+                             />
+                         </div>
+ 
+                         <div class="d-flex justify-content-between align-items-center mb-3">
+                             <div class="form-check">
+                                 <input type="checkbox" class="form-check-input" id="rememberMe">
+                                 <label class="form-check-label" for="rememberMe">Remember me</label>
+                             </div>
+                         </div>
+ 
+                         <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                             Login
+                         </button>
+                         
+                         <div class="text-center pt-3">
+                             <p class="mb-0">Don't have an account? <a href="<%= request.mainURL %>/register" class="text-decoration-none">Sign up</a></p>
+                         </div>
+                     </form>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+ 
+ <%- include ("includes/footer") %>

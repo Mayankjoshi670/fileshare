@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= typeof title == "undefined" ? "Home" : title %></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="<%= request.mainURL %>/public/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="<%= request.mainURL %>/public/font-awesome-4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="<%= request.mainURL %>/public/css/style.css" />
+        
+        <script src="<%= request.mainURL %>/public/js/vue.global.js"></script>
+
+        <style>
+            .navbar {
+                background-color: white;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                padding: 0.8rem 1rem;
+            }
+            
+            .navbar-brand {
+                font-weight: 600;
+                color: #4361ee;
+                font-size: 1.3rem;
+            }
+            
+            .nav-link {
+                color: #495057 !important;
+                font-weight: 500;
+                padding: 0.5rem 1rem !important;
+                margin: 0 0.1rem;
+                border-radius: 4px;
+                transition: all 0.2s ease;
+            }
+            
+            .nav-link:hover, .nav-item.active .nav-link {
+                background-color: rgba(67, 97, 238, 0.1);
+                color: #4361ee !important;
+            }
+            
+            .premium {
+                position: absolute;
+                top: -5px;
+                right: -10px;
+                background-color: #ffc107;
+                color: #000;
+                font-size: 0.6rem;
+                font-weight: bold;
+                padding: 2px 5px;
+                border-radius: 10px;
+            }
+            
+            .search-input {
+                border-radius: 20px;
+                padding-right: 40px;
+            }
+            
+            .search-btn {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: transparent;
+                border: none;
+                color: #4361ee;
+            }
+            
+            @media (max-width: 992px) {
+                .search-form {
+                    margin-top: 10px;
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <input type="hidden" id="base-url" value="<%= request.mainURL %>" />
+
+        <script>
+            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const baseUrl = document.getElementById("base-url").value;
+
+            formatBytes = function(bytes, decimals = 2) {
+                if (bytes === 0) return '0 Bytes';
+            
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            };
+        </script>
+
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="<%= request.mainURL %>">
+                    <i class="fa fa-exchange mr-2"></i>File Transfer
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item <%= typeof title === 'undefined' || title === 'Home' ? 'active' : '' %>">
+                            <a class="nav-link" href="<%= request.mainURL %>">
+                                <i class="fa fa-home mr-1"></i> Home
+                            </a>
+                        </li>
+
+                        <li class="nav-item <%= typeof title !== 'undefined' && title === 'MyUploads' ? 'active' : '' %>">
+                            <a class="nav-link" href="<%= request.mainURL %>/MyUploads">
+                                <i class="fa fa-upload mr-1"></i> My Uploads
+                            </a>
+                        </li>
+
+                       
+
+                        <li class="nav-item <%= typeof title !== 'undefined' && title === 'MySharedLinks' ? 'active' : '' %>">
+                            <a class="nav-link" href="<%= request.mainURL %>/MySharedLinks">
+                                <i class="fa fa-link mr-1"></i> My shared links
+                            </a>
+                        </li>
+
+                        <% if (request.isLogin) { %>
+                            <li class="nav-item dropdown <%= typeof title !== 'undefined' && title === 'Admin' ? 'active' : '' %>">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
+                                    <i class="fa fa-user mr-1"></i> <%= request.session.user.name %>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="<%= request.mainURL %>/Logout">
+                                        <i class="fa fa-sign-out mr-1"></i> Log out
+                                    </a>
+                                </div>
+                            </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<%= request.mainURL %>/Login">
+                                    <i class="fa fa-sign-in mr-1"></i> Login
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="<%= request.mainURL %>/Register">
+                                    <i class="fa fa-user-plus mr-1"></i> Register
+                                </a>
+                            </li>
+                        <% } %>
+                    </ul>
+
+                    <form class="form-inline my-2 my-lg-0 search-form" method="GET" action="<%= request.mainURL %>/Search">
+                        <div class="position-relative">
+                            <input class="form-control search-input" type="search" placeholder="Search" name="search" value="<%= request.query.search %>">
+                            <button class="search-btn" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </nav>

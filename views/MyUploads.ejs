@@ -1,0 +1,237 @@
+<%- include("includes/header", { "title": "My Uploads" }) %>
+
+<div class="container my-5">
+    <%- include("includes/ResponseAlert", { "request": request }) %>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gradient text-primary">My Uploads</h1>
+        <button class="btn btn-primary rounded-pill px-4" onclick="selectFileForUpload();">
+            <i class="fas fa-cloud-upload-alt me-2"></i> Upload File
+        </button>
+    </div>
+
+    <% if (uploaded.length === 0) { %>
+        <div class="text-center py-5">
+            <div class="mb-4" style="font-size: 5rem; color: #e9ecef;">
+                <i class="fas fa-folder-open"></i>
+            </div>
+            <h4 class="text-muted mb-3">No files uploaded yet</h4>
+            <p class="text-muted mb-4">Upload your first file by clicking the button above</p>
+            <button class="btn btn-primary rounded-pill px-4" onclick="selectFileForUpload();">
+                <i class="fas fa-cloud-upload-alt me-2"></i> Upload Now
+            </button>
+        </div>
+    <% } else { %>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            <% uploaded.forEach(function (singleFile) { %>
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-center align-items-center bg-light rounded-3 p-4 mb-3" style="height: 150px;">
+                                <i class="fas fa-file-alt text-primary" style="font-size: 3.5rem;"></i>
+                            </div>
+                            <div class="mt-auto">
+                                <h5 class="mb-1 text-truncate">
+                                    <a href="javascript:void(0);" class="text-decoration-none text-dark"
+                                       onclick="viewFile(this);"
+                                       data-id="<%= singleFile._id %>"
+                                       data-name="<%= singleFile.name %>"
+                                       data-type="<%= singleFile.type %>">
+                                        <%= singleFile.name %>
+                                    </a>
+                                </h5>
+                                <small class="text-muted"><%= singleFile.type || "Unknown type" %></small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0 pt-0">
+                            <button class="btn btn-sm btn-outline-primary w-100" onclick="viewFile(this);"
+                                data-id="<%= singleFile._id %>"
+                                data-name="<%= singleFile.name %>"
+                                data-type="<%= singleFile.type %>">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<form method="POST" action="<%= request.mainURL %>/UploadFile" enctype="multipart/form-data" id="form-upload-file">
+    <input type="hidden" name="_id" value="" />
+    <input type="file" name="file" id="input-file-upload" style="display: none;" onchange="confirmUpload();" required />
+</form>
+
+<!-- File View Modal -->
+<div class="modal fade" id="viewFileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold d-flex align-items-center">
+                    <i class="fas fa-file-alt text-primary me-2"></i>
+                    <span class="file-name-truncate"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body text-center py-4">
+                <div class="mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                        <i class="fas fa-file-alt text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+                <h5 class="file-name-full mb-3"></h5>
+                <div class="d-grid gap-2">
+                    <button class='btn btn-primary rounded-pill py-2' onclick='downloadFile(this);' data-id=''>
+                        <i class='fas fa-download me-2'></i>Download File
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+                <div class="d-flex gap-2">
+                    <form method="POST" action="<%= request.mainURL %>/ShareViaLink" id="form-share-via-link" style="display: contents;">
+                        <input type="hidden" name="_id" required />
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4" onclick="shareViaLink();">
+                            <i class="fas fa-share-alt me-2"></i>Share
+                        </button>
+                    </form>
+                    <form method="POST" action="<%= request.mainURL %>/DeleteFile" id="form-delete-file">
+                        <input type="hidden" name="_id" required />
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-4" onclick="confirmDeleteFile(this);">
+                            <i class="fas fa-trash-alt me-2"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectFileForUpload() {
+        document.getElementById("input-file-upload").click();
+    }
+
+    function confirmUpload() {
+        swal({
+            title: "Confirm Upload",
+            text: "Are you sure you want to upload this file?",
+            icon: "info",
+            buttons: {
+                cancel: {
+                    text: "Cancel",
+                    value: null,
+                    visible: true,
+                    className: "btn btn-outline-secondary"
+                },
+                confirm: {
+                    text: "Upload",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            }
+        }).then(function (isOkay) {
+            if (isOkay) {
+                document.getElementById("form-upload-file").submit();
+            }
+        });
+    }
+
+    function viewFile(self) {
+        var _id = self.getAttribute("data-id");
+        var name = self.getAttribute("data-name");
+        
+        document.querySelector("#viewFileModal .modal-title .file-name-truncate").innerHTML = 
+            name.length > 20 ? name.substring(0, 20) + '...' : name;
+        document.querySelector("#viewFileModal .file-name-full").innerHTML = name;
+        
+        // Set the data-id for the download button
+        document.querySelector("#viewFileModal .modal-body button").setAttribute('data-id', _id);
+        
+        // Set the _id for forms
+        document.getElementById("form-delete-file")._id.value = _id;
+        document.getElementById("form-share-via-link")._id.value = _id;
+        
+        // Show modal
+        var modal = new bootstrap.Modal(document.getElementById('viewFileModal'));
+        modal.show();
+    }
+
+    function shareViaLink() {
+        swal({
+            title: "Generate Shareable Link?",
+            text: "This will create a public link that anyone can access.",
+            icon: "info",
+            buttons: {
+                cancel: {
+                    text: "Cancel",
+                    value: null,
+                    visible: true,
+                    className: "btn btn-outline-secondary"
+                },
+                confirm: {
+                    text: "Generate Link",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-primary"
+                }
+            }
+        }).then(function (confirm) {
+            if (confirm) {
+                document.getElementById("form-share-via-link").submit();
+            }
+        });
+    }
+
+    function confirmDeleteFile(button) {
+        swal({
+            title: "Are you sure?",
+            text: "Once deleted, you will not be able to recover this file!",
+            icon: "warning",
+            buttons: {
+                cancel: {
+                    text: "Cancel",
+                    value: null,
+                    visible: true,
+                    className: "btn btn-outline-secondary"
+                },
+                confirm: {
+                    text: "Delete",
+                    value: true,
+                    visible: true,
+                    className: "btn btn-danger"
+                }
+            },
+            dangerMode: true,
+        }).then(function (willDelete) {
+            if (willDelete) {
+                button.form.submit();
+            }
+        });
+    }
+</script>
+
+<style>
+    .text-gradient {
+        background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>
+
+<%- include("includes/footer") %>
