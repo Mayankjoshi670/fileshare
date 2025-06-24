@@ -32,7 +32,11 @@ var mainURL = process.env.MAIN_URL || "http://localhost:3000";
 var database = null;
 
 app.use(function (request, result, next) {
-    request.mainURL = process.env.MAIN_URL || (request.protocol + "://" + request.get("host"));
+    let protocol = request.headers['x-forwarded-proto'] || request.protocol;
+    if (protocol === 'http' && process.env.NODE_ENV === 'production') {
+        protocol = 'https';
+    }
+    request.mainURL = process.env.MAIN_URL || (protocol + "://" + request.get("host"));
     request.isLogin = (typeof request.session.user !== "undefined");
     request.user = request.session.user;
     next();
